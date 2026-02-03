@@ -107,7 +107,12 @@ function renderTasks() {
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-button';
         deleteBtn.textContent = '削除';
-        deleteBtn.addEventListener('click', () => deleteTask(task.id));
+        deleteBtn.addEventListener('click', () => {
+            // Issue #1: 誤削除を防ぐため確認ダイアログを追加
+            if (confirm('本当に削除しますか？')) {
+                deleteTask(task.id);
+            }
+        });
         
         li.appendChild(checkbox);
         li.appendChild(span);
