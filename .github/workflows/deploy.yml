@@ -1,0 +1,37 @@
+name: Deploy to GitHub Pages
+
+# mainブランチにプッシュされたら自動実行
+on:
+  push:
+    branches:
+      - main
+
+# GitHub Pagesにデプロイする権限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. リポジトリをチェックアウト
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      # 2. GitHub Pagesの設定
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      # 3. ファイルをアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      
+      # 4. GitHub Pagesにデプロイ
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
