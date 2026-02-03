@@ -29,6 +29,29 @@ h1 {
     margin-bottom: 10px;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.dark-mode-toggle {
+    background: none;
+    border: 2px solid #667eea;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.dark-mode-toggle:hover {
+    background: #667eea;
+    transform: rotate(20deg);
+}
+
 .subtitle {
     text-align: center;
     color: #666;
@@ -118,4 +141,54 @@ h1 {
 
 .delete-button:hover {
     background: #ee5a52;
+}
+
+
+/* ダークモードのスタイル */
+body.dark-mode {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+body.dark-mode .container {
+    background: #2c3e50;
+    color: #ecf0f1;
+}
+
+body.dark-mode h1 {
+    color: #3498db;
+}
+
+body.dark-mode .subtitle {
+    color: #bdc3c7;
+}
+
+body.dark-mode #taskInput {
+    background: #34495e;
+    color: #ecf0f1;
+    border-color: #3498db;
+}
+
+body.dark-mode #addButton {
+    background: #3498db;
+}
+
+body.dark-mode #addButton:hover {
+    background: #2980b9;
+}
+
+body.dark-mode .todo-item {
+    background: #34495e;
+}
+
+body.dark-mode .todo-text {
+    color: #ecf0f1;
+}
+
+body.dark-mode .dark-mode-toggle {
+    border-color: #3498db;
+    color: #f39c12;
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+    background: #3498db;
 }

@@ -4,13 +4,31 @@
 const taskInput = document.getElementById('taskInput');
 const addButton = document.getElementById('addButton');
 const todoList = document.getElementById('todoList');
+const darkModeToggle = document.getElementById('darkModeToggle');
 
 // ローカルストレージからタスクを読み込む
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
+// ダークモードの状態を読み込む
+let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
 // ページ読み込み時にタスクを表示
 document.addEventListener('DOMContentLoaded', () => {
     renderTasks();
+    
+    // ダークモードの状態を適用
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        darkModeToggle.textContent = '☀️';
+    }
+});
+
+// ダークモード切り替え
+darkModeToggle.addEventListener('click', () => {
+    isDarkMode = !isDarkMode;
+    document.body.classList.toggle('dark-mode');
+    darkModeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', isDarkMode);
 });
 
 // タスク追加ボタンのイベントリスナー
