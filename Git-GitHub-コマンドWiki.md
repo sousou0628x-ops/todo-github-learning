@@ -400,3 +400,344 @@ Issue #1が自動で閉じる ✅
 ---
 
 **最終更新：2026年2月3日**
+
+
+---
+
+## ステップ4: GitHub Actions（自動デプロイ）
+
+### 🎯 目標：プッシュするだけで自動デプロイ
+
+手動デプロイの問題：
+- ❌ FTPでファイルを一つずつアップロード
+- ❌ どのファイルを変更したか忘れる
+- ❌ アップロード忘れでバグ発生
+- ❌ 時間がかかる、面倒
+
+GitHub Actionsの解決策：
+- ✅ `git push`するだけで自動デプロイ
+- ✅ 全てのファイルが自動で同期
+- ✅ ミスがない
+- ✅ 数秒で完了
+
+### 📝 GitHub Actionsの設定
+
+#### 1. ワークフローファイルを作成
+
+`.github/workflows/deploy.yml`を作成：
+
+```yaml
+name: Deploy to GitHub Pages
+
+# mainブランチにプッシュされたら自動実行
+on:
+  push:
+    branches:
+      - main
+
+# GitHub Pagesにデプロイする権限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. リポジトリをチェックアウト
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      # 2. GitHub Pagesの設定
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      # 3. ファイルをアップロード
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+      
+      # 4. GitHub Pagesにデプロイ
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+#### 2. GitHub Pagesを有効化
+
+1. リポジトリの「Settings」タブ
+2. 左サイドバーの「Pages」
+3. Source: **GitHub Actions** を選択
+
+#### 3. プッシュして自動デプロイ
+
+```bash
+git add .github/workflows/deploy.yml
+git commit -m "CI/CD: GitHub Pagesへの自動デプロイを設定"
+git push origin main
+```
+
+#### 4. 確認
+
+- **Actionsタブ**：ワークフローの実行状況を確認
+- **公開URL**：`https://ユーザー名.github.io/リポジトリ名/`
+
+### 🔄 自動デプロイのフロー
+
+```
+コードを変更
+   ↓
+git add .
+git commit -m "機能追加"
+git push origin main
+   ↓
+GitHub Actionsが自動実行
+   ├── コードをチェックアウト
+   ├── テスト実行（設定すれば）
+   ├── ビルド（必要なら）
+   └── GitHub Pagesにデプロイ
+   ↓
+数秒後、自動的にサイトが更新される ✅
+```
+
+### 🐛 よくあるエラーと解決法
+
+#### エラー1: "Pages site failed"
+
+```
+Get Pages site failed. 
+Please verify that the repository has Pages enabled
+```
+
+**原因：** GitHub Pagesが有効になっていない
+
+**解決策：**
+1. Settings → Pages
+2. Source を「GitHub Actions」に変更
+
+#### エラー2: "Permission denied"
+
+```
+Error: HttpError: Resource not accessible by integration
+```
+
+**原因：** ワークフローに必要な権限がない
+
+**解決策：** `permissions:`セクションを追加
+```yaml
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+```
+
+#### エラー3: ワークフローが実行されない
+
+**原因：** ファイルパスが間違っている
+
+**確認：**
+- `.github/workflows/deploy.yml`（正しい）
+- `github/workflows/deploy.yml`（間違い）
+
+### 💡 GitHub Actionsの活用例
+
+#### 例1: 自動テスト
+
+```yaml
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: npm test
+```
+
+#### 例2: コードの自動チェック
+
+```yaml
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ESLint
+        run: npm run lint
+```
+
+#### 例3: Pull Request時のみ実行
+
+```yaml
+on:
+  pull_request:
+    branches:
+      - main
+```
+
+### 🎓 学んだこと
+
+1. **自動化の力**
+   - 人間がやらなくていいことは機械に任せる
+   - ミスが減る、時間が節約できる
+
+2. **CI/CD（継続的インテグレーション/デリバリー）**
+   - CI: コードをプッシュしたら自動テスト
+   - CD: テストが通ったら自動デプロイ
+
+3. **GitHub Actionsの仕組み**
+   - YAMLファイルで設定
+   - イベント（push, pull_request等）で自動実行
+   - 様々なアクション（actions）を組み合わせる
+
+---
+
+## GitHub料金・制限について
+
+### 💰 料金プラン
+
+#### 無料プラン（Free）
+- ✅ **パブリックリポジトリ：無制限**
+- ✅ **プライベートリポジトリ：無制限**
+- ✅ **GitHub Pages：無料**
+- ✅ **GitHub Actions：月2,000分無料**
+- ✅ **ストレージ：500MB（Actions）**
+- ✅ **帯域幅：月1GB（Actions）**
+
+#### 有料プラン（Pro: $4/月）
+- ✅ GitHub Actions：月3,000分
+- ✅ ストレージ：2GB
+- ✅ 高度な機能（コードレビュー等）
+
+### 📊 XSERVERとの比較
+
+| 項目 | XSERVER | GitHub Pages |
+|------|---------|--------------|
+| **料金** | 約800円/月 | **無料** |
+| **容量** | 数百GB | リポジトリ1GB推奨 |
+| **用途** | 動的サイト（PHP等） | 静的サイト（HTML/CSS/JS） |
+| **データベース** | MySQL等使える | 使えない |
+| **サーバーサイド** | PHP, Python等 | 使えない |
+| **独自ドメイン** | 簡単 | 設定必要 |
+| **SSL証明書** | 無料 | 無料（自動） |
+
+### 🎯 使い分け
+
+**GitHub Pagesが向いている：**
+- ✅ 静的サイト（HTML/CSS/JavaScript）
+- ✅ ポートフォリオサイト
+- ✅ ドキュメントサイト
+- ✅ ランディングページ
+- ✅ 個人ブログ（Jekyll, Hugo等）
+- ✅ 学習用プロジェクト
+
+**XSERVERが必要：**
+- ✅ WordPress
+- ✅ PHPアプリケーション
+- ✅ データベースが必要
+- ✅ サーバーサイド処理
+- ✅ 大容量ファイル
+- ✅ メールサーバー
+
+### 📏 GitHub Pagesの制限
+
+#### リポジトリサイズ
+- **推奨：1GB以下**
+- 1GBを超えると警告メール
+- 厳密な上限はないが、大きすぎると遅くなる
+
+#### ファイルサイズ
+- **単一ファイル：100MB以下推奨**
+- 100MBを超えるとGit LFSが必要
+
+#### 帯域幅
+- **月100GB（ソフトリミット）**
+- 超えても通常は問題ない
+- 極端に多いとGitHubから連絡が来る可能性
+
+#### ビルド時間
+- **10分以内**
+- 10分を超えるとタイムアウト
+
+### 💡 実用的なアドバイス
+
+#### 個人開発者の場合
+
+**無料で十分なケース：**
+```
+静的サイト（HTML/CSS/JS）
++ GitHub Pages（無料）
++ 独自ドメイン（年1,000円程度）
+= 年1,000円で運用可能
+```
+
+**XSERVERが必要なケース：**
+```
+WordPress + データベース
++ XSERVER（月800円）
+= 月800円必要
+```
+
+#### コスト削減の例
+
+**Before（XSERVER）：**
+- 静的サイト5個 → 月800円
+
+**After（GitHub Pages）：**
+- 静的サイト5個 → 無料
+- 節約：年9,600円
+
+### 🚀 GitHub Actionsの無料枠
+
+#### 無料プランの制限
+
+- **月2,000分**（約33時間）
+- パブリックリポジトリは無制限
+- プライベートリポジトリのみカウント
+
+#### 実際の使用例
+
+```
+1回のデプロイ：約30秒
+月100回デプロイ：50分
+→ 無料枠で十分！
+```
+
+#### 超過した場合
+
+- $0.008/分（約1円/分）
+- 例：月3,000分使用 → 1,000分超過 → 約1,000円
+
+### 📝 まとめ
+
+**GitHub（無料プラン）で十分な人：**
+- 静的サイトのみ
+- 個人プロジェクト
+- ポートフォリオ
+- 学習用
+
+**XSERVERが必要な人：**
+- WordPress使用
+- データベース必要
+- PHP等のサーバーサイド処理
+- 大容量ファイル
+
+**両方使う（ハイブリッド）：**
+- メインサイト：XSERVER（WordPress）
+- ランディングページ：GitHub Pages（無料）
+- ドキュメント：GitHub Pages（無料）
+- → コスト削減しながら最適な環境
+
+---
+
+**最終更新：2026年2月3日**
